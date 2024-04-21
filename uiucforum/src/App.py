@@ -1,6 +1,6 @@
-from flask import Flask, render_template, url_for, flash
-from flask_wtf import FlaskForm
-from data import RegistrationForm, LoginForm
+from flask import Flask, jsonify
+import csv
+from flask_cors import CORS
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'sdmak12n292edf9nrn1f1d9end1'
@@ -20,27 +20,44 @@ posts = [
     }
 ]
 
-@app.route('/base')
-def base():
-    return render_template('base.html')
+'''@app.route('/submit-post', methods=['POST'])
+def submit_post():
+    data = request.json
+    username = data.get('username')
+    class1 = data.get('class1')
+    number = data.get('number')
+    title = data.get('title')
+    body = data.get('body')
+    '''
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegistrationForm()
-    return render_template('register.html', title='register', form=form)
+
+
+@app.route('/data')
+def data():
+    class_values = []
+    number_values = []
+
+    with open('class_data.csv', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            class_values.append(row['Class'])
+            number_values.append(row['Number'])
+
+    unique_classes = list(set(class_values))
+    unique_numbers = list(set(number_values))
+    unique_classes.sort()
+    unique_numbers.sort()
+ 
+    return jsonify({"unique_classes": unique_classes, "unique_numbers": unique_numbers})
+
+CORS(app, origins='*')
+
+
 
 @app.route('/')
 def home():
     return "hello"
 
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    return render_template('login.html', title='login', form=form)
-                           
-                          
-
+                                                 
 if (__name__) == '__main__':
     app.run(debug=True)
