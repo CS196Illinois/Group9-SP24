@@ -49,7 +49,39 @@ function App() {
   }
 
   const handleSubmit = () => {
-    // Here you can access the input values stored in state variables
+    
+    const postData = {
+      username: username,
+      class1: dropdownValue1,
+      number: dropdownValue2,
+      title: title,
+      body: postContent
+    };
+  
+    // Send a POST request to the backend
+    fetch('http://localhost:5000/api/posts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(postData)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to submit post');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log(data.message); // Log success message
+      // Add further logic if needed
+    })
+    .catch(error => {
+      console.error('Error submitting post:', error);
+      // Handle error
+    });
+    
+
     console.log('Username:', username);
     console.log('Dropdown 1:', dropdownValue1);
     console.log('Dropdown 2:', dropdownValue2);
